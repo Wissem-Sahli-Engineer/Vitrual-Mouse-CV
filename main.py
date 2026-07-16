@@ -39,6 +39,11 @@ pTime = time.time()
 
 Alert = "Hand is not completly DETECTED ! Try to move it !"
 
+is_clicking = False
+frameR = 125 
+box_x1, box_y1 = frameR, frameR
+box_x2, box_y2 = Wcam - frameR, Hcam - frameR
+
 while True:
 
     # Reading
@@ -63,23 +68,25 @@ while True:
 
     lmList = detector.findHands(img,res, draw =True, draw_finger= 8)
 
-    cv2.rectangle(img, (Wcam // 4, Hcam // 4), (2 * Wcam // 4, 2 * Hcam // 4),
-                (0,0,255),1)
+    cv2.rectangle(img, (box_x1, box_y1), (box_x2, box_y2), (0, 255, 0), 2)
     
     if lmList:
         lmList = lmList[0]
         f = get_fingers_up(lmList)
 
         x , y = lmList[8][1] , lmList[8][2]
-        x , y = np.interp(x , (0 , Wcam),(0,Wscr)) , np.interp(y , (0 , Hcam),(0,Hscr))
+        x , y = np.interp(x, (box_x1, box_x2), (0, Wscr)) , np.interp(y, (box_y1, box_y2), (0, Hscr))
 
         mouse.position = (x , y)
 
         if f[0] and not f[1]:
+            is_clicking = False
             pass
 
         elif f[0] and f[1]:
-            mouse.click(Button.left, 1)
+            if not is_clicking:
+                mouse.click(Button.left, 1)
+                is_clicking = True
 
 
     else :
