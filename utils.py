@@ -33,4 +33,13 @@ def draw_fps_capsule(img, fps):
 def get_dist(point1,point2):
     return math.hypot(point1[1]-point2[1],point1[2]-point2[2])
 
+def get_fingers_up(hand):
+    """Returns a list of 2 booleans: [Index, Middle]"""
+    fingers = []
 
+    for i in range(8, 13, 4):
+        tip_dist = math.hypot(hand[i][1] - hand[0][1], hand[i][2] - hand[0][2])
+        pip_dist = math.hypot(hand[i-2][1] - hand[0][1], hand[i-2][2] - hand[0][2])
+        fingers.append(tip_dist > pip_dist)
+        
+    return fingers
