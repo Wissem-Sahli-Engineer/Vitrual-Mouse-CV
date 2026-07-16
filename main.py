@@ -53,7 +53,7 @@ is_clicking = False
 is_swiping = False
 is_selecting = False
 swipe_start_x = 0
-swipe_threshold = 200
+swipe_threshold = 350
 
 while True:
 
@@ -84,6 +84,11 @@ while True:
     if lmList:
         lmList = lmList[0]
         f = get_fingers_up(lmList)
+
+        # Release mouse drag if selection gesture is no longer active
+        if is_selecting and not (f[0] and f[4] and not f[1] and not f[2] and not f[3]):
+            mouse.release(Button.left)
+            is_selecting = False
 
         x , y = lmList[8][1] , lmList[8][2]
         x , y = np.interp(x, (box_x1, box_x2), (0, Wscr)) , np.interp(y, (box_y1, box_y2), (0, Hscr))
@@ -122,9 +127,11 @@ while True:
         else :
             is_clicking = False
             is_swiping = False
-            is_selecting = False
 
     else :
+        if is_selecting:
+            mouse.release(Button.left)
+            is_selecting = False
         cv2.putText(img,Alert, (620,100), cv2.FONT_HERSHEY_COMPLEX,
                     1, (183,81,93) , 1
                     )
